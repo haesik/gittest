@@ -17,33 +17,21 @@
 var mqtt = require('mqtt');
 var assert = require('assert');
 
-var connected = false;
-var pingresp = false;
-
 var pubClientOpts = {
   clientId: 'iotjs-mqtt-test-pub',
 //  host: 'test.mosquitto.org',
 //  host: 'localhost',
-  host: '13.125.245.19',
+  host: 'ec2-13-125-245-19.ap-northeast-2.compute.amazonaws.com',
   port: 1883,
   keepalive: 30,
 };
 var pubOpts = {
   topic: 'iotjs/gitupdate',
-  message: "pupupu",
+  message: "{add: aaa.js}",
   qos: 1,
 };
 
-var pubClient = mqtt.connect(pubClientOpts, function(){
-  connected = true;
-  console.log("pubClinet.connect");
+var pubClient = mqtt.connect(pubClientOpts);
 
-  pubClient.on('pingresp', function() {
-    pingresp = true;
-    console.log("pubClient.pingresp");
-    pubClient.publish(pubOpts);
-  });
-
-  pubClient.ping();
-});
-
+pubClient.publish(pubOpts);
+pubClient.end();
