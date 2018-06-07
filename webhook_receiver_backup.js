@@ -14,27 +14,13 @@
  * limitations under the License.
  */
 
-
 var mqtt = require('mqtt');
 var assert = require('assert');
 
-var pubClientOpts = {
-  clientId: 'iotjs-mqtt-test-pub',
-//  host: 'test.mosquitto.org',
-//  host: 'localhost',
-  host: 'ec2-13-125-245-19.ap-northeast-2.compute.amazonaws.com',
-  port: 1883,
-  keepalive: 30,
-};
-var pubOpts = {
-  topic: 'iotjs/gitupdate',
-  message: "{add: aa.js}",
-  qos: 1,
-};
 
-var pubClient = mqtt.connect(pubClientOpts);
 
-/*
+
+
 // github file download request.
 var fs = require('fs');
 var request = require('request');
@@ -48,13 +34,13 @@ function download_file(urlStr){
 		fs.writeFileSync(file_path, data);
 	});
 };
-*/
+
+
 
 
 // receiving webhook of github
 var http = require('http');
 var port = 8080, server;
-
 (server = http.createServer(function (request, response) {
 	var path = request.url.split('?');
 	var obj;
@@ -76,9 +62,7 @@ var port = 8080, server;
 })).listen(port);
 
 
-
 // http request utils
-
 function status(res, data, code) {
         var headers;
 	var isjson = (typeof data === 'object');
