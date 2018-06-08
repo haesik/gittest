@@ -1,4 +1,3 @@
-
 /* Copyright 2018-present Samsung Electronics Co., Ltd. and other contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,8 +19,6 @@ var assert = require('assert');
 
 var pubClientOpts = {
   clientId: 'iotjs-mqtt-test-pub',
-//  host: 'test.mosquitto.org',
-//  host: 'localhost',
   host: 'ec2-13-125-245-19.ap-northeast-2.compute.amazonaws.com',
   port: 1883,
   keepalive: 30,
@@ -32,9 +29,11 @@ var pubOpts = {
   qos: 1,
 };
 
-var pubClient = mqtt.connect(pubClientOpts);
+var pubClient = mqtt.connect(pubClientOpts, function(){
+	console.log("console.log ");
+//	pubClient.publish(pubOpts);
+});
 
-/*
 // github file download request.
 var fs = require('fs');
 var request = require('request');
@@ -48,8 +47,6 @@ function download_file(urlStr){
 		fs.writeFileSync(file_path, data);
 	});
 };
-*/
-
 
 // receiving webhook of github
 var http = require('http');
@@ -77,10 +74,24 @@ var port = 8080, server;
 				console.log('commit.added.length : ' + commit.added.length);
 				commit.added.forEach(function(fname){
 					console.log('added filename : ' + fname);
+					pubOpts.message = fname;
+					pubClient.publish(pubOpts);
+				});
+				console.log('commit.modified.length : ' + commit.modified.length);
+				commit.modified.forEach(function(fname){
+					console.log('modified filename : ' + fname);
+					pubOpts.message = fname;
+					pubClient.publish(pubOpts);
+				});
+				console.log('commit.removed.length : ' + commit.removed.length);
+				commit.removed.forEach(function(fname){
+					console.log('removed filename : ' + fname);
+					pubOpts.message = fname;
+					pubClient.publish(pubOpts);
 				});
 			});
-		});
 		status(response, "Hello,,, world... test... server post");
+		});
 	}
 })).listen(port);
 

@@ -27,8 +27,6 @@ var subOpts = {
 
 var subClientOpts = {
   clientId: 'iotjs-mqtt-test-sub',
-//  host: 'test.mosquitto.org',
-//  host: 'localhost',
   host: '13.125.245.19',
   port: 1883,
   keepalive: 30,
@@ -51,7 +49,7 @@ var subClient = mqtt.connect(subClientOpts, function() {
 
   subClient.on('message', function(data) {
     msg_received = data.message;
-    console.log(msg_received.toString());
+    console.log("download file : " + msg_received.toString());
   });
 
   subClient.ping();
