@@ -29,11 +29,15 @@ var pubOpts = {
   qos: 1,
 };
 
-var pubClient = mqtt.connect(pubClientOpts, function(){
-	console.log("console.log ");
-//	pubClient.publish(pubOpts);
-});
+function pubMessage(message){
+	var pubClient = mqtt.connect(pubClientOpts, function(){
+		pubOpts.message = message;
+		pubClient.publish(pubOpts);
+		pubClient.end();
+	});
+}
 
+/*
 // github file download request.
 var fs = require('fs');
 var request = require('request');
@@ -47,7 +51,7 @@ function download_file(urlStr){
 		fs.writeFileSync(file_path, data);
 	});
 };
-
+*/
 // receiving webhook of github
 var http = require('http');
 var port = 8080, server;
@@ -55,6 +59,7 @@ var port = 8080, server;
 (server = http.createServer(function (request, response) {
 	var path = request.url.split('?');
 	var obj;
+	var commit_text;
 	console.log('path : ' + path[0]);
 	if (request.method == 'GET') {
 		console.log('get request');
@@ -64,41 +69,43 @@ var port = 8080, server;
 		console.log('post request');	
 		request.on('data', function(data){
 			obj = JSON.parse(data);
-		//	, function(key, value){
-		//		console.log(key + ": " + value);
-		//	});		
-			console.log(' commits : ' + obj.commits);
-			console.log('post data : ' + JSON.stringify(obj, null, 2));
-			console.log(' commits.added :' + obj.commits.length);
-			obj.commits.forEach(function(commit){
-				console.log('commit.added.length : ' + commit.added.length);
-				commit.added.forEach(function(fname){
-					console.log('added filename : ' + fname);
-					pubOpts.message = fname;
-					pubClient.publish(pubOpts);
+			if(obj.commits != undefined){
+				commit_text = JSON.stringify(obj.commits, null, 2);
+				console.log('commits data : ' + commit_text); 
+				pubMessage(commit_text);
+				/*
+				console.log('commits.added :' + obj.commits.length);
+				obj.commits.forEach(function(commit){
+					console.log('commit.added.length : ' + commit.added.length);
+					commit.added.forEach(function(fname){
+						console.log('added filename : ' + fname);
+						pubOpts.message = fname;
+						pubClient.publish(pubOpts);
+						pubClient.end();
+					});
+					console.log('commit.modified.length : ' + commit.modified.length);
+					commit.modified.forEach(function(fname){
+						console.log('modified filename : ' + fname);
+						pubOpts.message = fname;
+						pubClient.publish(pubOpts);
+						pubClient.end();
+					});
+					console.log('commit.removed.length : ' + commit.removed.length);
+					commit.removed.forEach(function(fname){
+						console.log('removed filename : ' + fname);
+						pubOpts.message = fname;
+						pubClient.publish(pubOpts);
+						pubClient.end();
+					});
 				});
-				console.log('commit.modified.length : ' + commit.modified.length);
-				commit.modified.forEach(function(fname){
-					console.log('modified filename : ' + fname);
-					pubOpts.message = fname;
-					pubClient.publish(pubOpts);
-				});
-				console.log('commit.removed.length : ' + commit.removed.length);
-				commit.removed.forEach(function(fname){
-					console.log('removed filename : ' + fname);
-					pubOpts.message = fname;
-					pubClient.publish(pubOpts);
-				});
-			});
+				*/
+			}
 		status(response, "Hello,,, world... test... server post");
 		});
 	}
 })).listen(port);
 
-
-
 // http request utils
-
 function status(res, data, code) {
         var headers;
 	var isjson = (typeof data === 'object');
