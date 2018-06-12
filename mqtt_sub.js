@@ -32,6 +32,20 @@ var subClientOpts = {
   keepalive: 30,
 };
 
+// github file download request.
+var fs = require('fs');
+var request = require('request');
+function download_file(urlStr){
+       request.get(urlStr, null, function(err,data) {
+               if (err) {
+                       console.error(err);
+                       return ;
+               }
+               console.log(data);
+               fs.writeFileSync(file_path, data);
+       });
+};
+
 var subClient = mqtt.connect(subClientOpts, function() {
   connected = true;
   console.log("subClient.connect");
@@ -50,6 +64,19 @@ var subClient = mqtt.connect(subClientOpts, function() {
   subClient.on('message', function(data) {
     msg_received = data.message;
     console.log("message: " + msg_received.toString());
+    obj = JSON.parse(msg_received.toString());
+    console.log('commit.added.length : ' + obj.added.length);
+    obj.added.forEach(function(fname){
+      console.log('          ' + fname);
+    });
+    console.log('commit.modified.length : ' + obj.modified.length);
+    obj.modified.forEach(function(fname){
+      console.log('          ' + fname);
+    });
+    console.log('commit.removed.length : ' + obj.removed.length);
+    obj.removed.forEach(function(fname){
+      console.log('          ' + fname);
+    });
   });
 
   subClient.ping();
