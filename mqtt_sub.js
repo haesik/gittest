@@ -49,7 +49,7 @@ var subClient = mqtt.connect(subClientOpts, function() {
 
   subClient.on('message', function(data) {
     msg_received = data.message;
-    console.log("download file : " + msg_received.toString());
+    console.log("message: " + msg_received.toString());
   });
 
   subClient.ping();
