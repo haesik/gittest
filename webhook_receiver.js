@@ -29,29 +29,13 @@ var pubOpts = {
   qos: 1,
 };
 
+
+var pubClient = mqtt.connect(pubClientOpts);
 function pubMessage(message){
-	var pubClient = mqtt.connect(pubClientOpts, function(){
-		pubOpts.message = message;
-		pubClient.publish(pubOpts);
-		pubClient.end();
-	});
+	pubOpts.message = message;
+	pubClient.publish(pubOpts);
 }
 
-/*
-// github file download request.
-var fs = require('fs');
-var request = require('request');
-function download_file(urlStr){
-	request.get(urlStr, null, function(err,data) {
-		if (err) {
-			console.error(err);
-			return ;
-		}
-		console.log(data);
-		fs.writeFileSync(file_path, data);
-	});
-};
-*/
 // receiving webhook of github
 var http = require('http');
 var port = 8080, server;
@@ -70,35 +54,12 @@ var port = 8080, server;
 		request.on('data', function(data){
 			obj = JSON.parse(data);
 			if(obj.commits != undefined){
-				commit_text = JSON.stringify(obj.commits, null, 2);
-				console.log('commits data : ' + commit_text); 
-				pubMessage(commit_text);
-				/*
-				console.log('commits.added :' + obj.commits.length);
+				console.log('commit count :' + obj.commits.length);
 				obj.commits.forEach(function(commit){
-					console.log('commit.added.length : ' + commit.added.length);
-					commit.added.forEach(function(fname){
-						console.log('added filename : ' + fname);
-						pubOpts.message = fname;
-						pubClient.publish(pubOpts);
-						pubClient.end();
-					});
-					console.log('commit.modified.length : ' + commit.modified.length);
-					commit.modified.forEach(function(fname){
-						console.log('modified filename : ' + fname);
-						pubOpts.message = fname;
-						pubClient.publish(pubOpts);
-						pubClient.end();
-					});
-					console.log('commit.removed.length : ' + commit.removed.length);
-					commit.removed.forEach(function(fname){
-						console.log('removed filename : ' + fname);
-						pubOpts.message = fname;
-						pubClient.publish(pubOpts);
-						pubClient.end();
-					});
+					commit_text = JSON.stringify(commit, null, 2);
+					console.log('commit datat : ' + commit_text);
+					pubMessage(commit_text);
 				});
-				*/
 			}
 		status(response, "Hello,,, world... test... server post");
 		});
