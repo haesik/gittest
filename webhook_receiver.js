@@ -42,8 +42,6 @@ var port = 8080, server;
 
 (server = http.createServer(function (request, response) {
 	var path = request.url.split('?');
-	var obj;
-	var commit_text;
 	console.log('path : ' + path[0]);
 	if (request.method == 'GET') {
 		console.log('get request');
@@ -52,10 +50,12 @@ var port = 8080, server;
 	} else if(request.method == 'POST') {
 		console.log('post request');	
 		request.on('data', function(data){
+			var obj;
 			obj = JSON.parse(data);
 			if(obj.commits != undefined){
 				console.log('commit count :' + obj.commits.length);
 				obj.commits.forEach(function(commit){
+					var commit_text;
 					commit_text = JSON.stringify(commit, null, 2);
 					console.log('commit datat : ' + commit_text);
 					pubMessage(commit_text);
